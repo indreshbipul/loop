@@ -1,0 +1,15 @@
+# Dependency directories
+node_modules/
+
+# Environment variables (highly recommended)
+.env
+.env.local
+
+# Build/Dist folders
+frontend/dist/
+frontend/build/
+server/dist/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
