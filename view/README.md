@@ -7,7 +7,7 @@ It connects to the Loop backend to provide a real-time, secure, Amazon-style sho
 
 ## 🚀 Features
 
-### 🧑 Authentication
+### 🧑 Authentications
 - Login / Register
 - JWT stored in secure HttpOnly cookies
 - Session auto-restore on page refresh
