@@ -21,10 +21,10 @@ const url = 'mongodb+srv://indreshvikrambipul:Indresh%401@loop.w7pqwms.mongodb.n
 // Connect to MongoDB using Mongoose which is more advanced _____________________________
 const mongoConnect = mongoose.connect(url)
 .then((client) => {
-    console.log('MongoDB connected successfully');
+    return client
 })
 .catch((err) => {
-    console.error('MongoDB connection error:', err);
+    throw err
 });
 
 module.exports = mongoConnect

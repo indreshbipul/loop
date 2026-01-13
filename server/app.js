@@ -16,11 +16,11 @@ dotenv.config();
 const port = process.env.PORT
 const dburi = process.env.MONGODB_URI 
 
-// Middleware for parsing JSON and URL-encoded data
 const allowedOrigins = [
-  'http://localhost:5173', // Vite default
-  'http://localhost:3000', // Create React App default
-  'https://your-app-name.vercel.app' // Your live URL
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://loop-indreshbipuls-projects.vercel.app', 
+  'https://loop-17ph0up2e-indreshbipuls-projects.vercel.app' 
 ];
 app.use(cors(
     {
