@@ -119,12 +119,12 @@ const addProductWishlist = async (payload) =>{
 
 const removeWishlistItem = async (payload) => {
     try{
-        const response = await fetch(`${API_URL}/addWishlist`, {
+        const response = await fetch(`${API_URL}/removeWishlistItem`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({variantId : payload}),
             credentials : "include"
         });
         const cartItem = await response.json();

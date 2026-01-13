@@ -6,10 +6,12 @@ import productService from "../services/productServices.jsx";
 import useAuthHook from "../hooks/authHook.jsx";
 import authService from "../services/authServices.jsx";
 import Loader from "../components/Loader.jsx";
+import useWishList from "../hooks/useWishlist.jsx";
 
 function Wishlist() {
   const { sessionData, useSessionData, setContext_Error, setSessionData } = useAuthHook();
   const [wishlistItems, setWishlistItems] = useState([]);
+  const {wishlistCount} = useWishList()
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -49,8 +51,9 @@ function Wishlist() {
           navigate('/');
           return;
         }
-        if (status !== 200) throw new Error(res.message);
-        
+        if (status !== 200){
+          setContext_Error({ req: "wishlist", message: err.message})
+        }
         setWishlistItems(prev => prev.filter(item => item._id !== id));
       })
       .catch((err) => {

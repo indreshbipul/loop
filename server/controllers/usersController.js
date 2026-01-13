@@ -303,6 +303,7 @@ exports.removeFromWishlist = async(req,res,next) =>{
     }
     try {
         const removed = await WishlistModel.findOneAndDelete({userId,variantId})
+        console.log(removed)
         if(removed){
             return res.status(200).json({message : "removed sucessfully"})
         }
