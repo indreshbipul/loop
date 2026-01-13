@@ -17,13 +17,18 @@ const port = process.env.PORT
 const dburi = process.env.MONGODB_URI 
 
 // Middleware for parsing JSON and URL-encoded data
+const allowedOrigins = [
+  'http://localhost:5173', // Vite default
+  'http://localhost:3000', // Create React App default
+  'https://your-app-name.vercel.app' // Your live URL
+];
 app.use(cors(
     {
-         origin: ['https://loop-shop.netlify.app', 'http://localhost:5173'],
+         origin: allowedOrigins,
          credentials: true
     }
 ));
-app.set("trust proxy", 1)
+
 app.use(express.json());
 app.use(cookiesParser ())
 
