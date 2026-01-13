@@ -18,9 +18,7 @@ const dburi = process.env.MONGODB_URI
 
 const allowedOrigins = [
   'http://localhost:5173',
-  'http://localhost:3000',
   'https://loop-indreshbipuls-projects.vercel.app', 
-  'https://loop-17ph0up2e-indreshbipuls-projects.vercel.app' 
 ];
 app.use(cors(
     {
