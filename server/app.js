@@ -18,6 +18,7 @@ const dburi = process.env.MONGODB_URI
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'https://loop-shopping.netlify.app',
   'https://loop-indreshbipuls-projects.vercel.app', 
   'https://loop-17ph0up2e-indreshbipuls-projects.vercel.app' 
 ];
