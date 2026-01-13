@@ -1,12 +1,44 @@
-# React + Vite
+# 🛒 Loop — Frontend (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Loop is an **enterprise-grade e-commerce frontend** built using **React + Context API**.  
+It connects to the Loop backend to provide a real-time, secure, Amazon-style shopping experience with **SKU-level products, cart reconciliation, and global session state**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+### 🧑 Authentication
+- Login / Register
+- JWT stored in secure HttpOnly cookies
+- Session auto-restore on page refresh
+- Global user state via AuthContext
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🛍️ Shopping Experience
+- SKU-based product variants (Size / Color)
+- Real-time price updates
+- Live stock validation
+- Add to cart & wishlist
+- Cart reconciliation banners
+
+### ❤️ Wishlist
+- Variant-level wishlist
+- Real-time heart sync across product cards
+
+### 🛒 Cart System
+- Price snapshot at add-to-cart
+- Detects price changes
+- Detects low stock
+- Global cart count
+
+### 📦 User Data
+- Profile
+- Address management
+- Saved carts
+- Secure API calls
+
+---
+
+## 🧩 Architecture
+
+Loop frontend is built around **React Context API** as a **single source of truth**.
+

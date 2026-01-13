@@ -36,17 +36,22 @@ app.use(authRoutes);
 app.use(usersRoutes);
 app.use(productsRoutes);
 
-// Connect to MongoDB and start the server
+
 mongoConnect
-.then(()=>{
-    console.log("connected")
-    let server = app.listen(port, () => {
-        console.log(`Server is running on http://localhost:${port}`);
-    }
-);
-})
-.catch((err) => {
-    console.error('MongoDB connection error');
-});
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
+
+
+if (process.env.VERCEL !== '1') {
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+        console.log(`Local server running on http://localhost:${port}`);
+    });
+}
+
 
 module.exports = app;

@@ -21,7 +21,7 @@ exports.login= async (req,res,next)=>{
         }
         const stateUpdate = await usersModel.updateOne(({"_id" : user._id},{$set :{isLoggedIn : true}}))
         const token = tokenGen({data : user._id})
-        res.cookie("sid", token, {httpOnly: true, secure: false, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        res.cookie("sid", token, {httpOnly: true, secure: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
         return res.status(200).json({message : "User Logged In sucessfully", 
             data :{email : user.email, firstName : user.firstName}
         })
@@ -43,7 +43,7 @@ exports.logout= (async(req,res,next)=>{
         }
         await UserModel.updateOne({ _id: userId },
             { $set: { isLoggedIn: false } })
-        res.clearCookie("sid",{ httpOnly: true, secure: false, secure: false})
+        res.clearCookie("sid",{ httpOnly: true, secure: true})
         return res.status(200).json({ message: "Logged out successfully" })
     }
     catch(err){
