@@ -64,7 +64,7 @@ app.use(productsRoutes);
 //     console.error('MongoDB connection error:', err);
 //   });
 
-const connectDB = require('./db');
+const connectDB = require('./utils/mongoDb');
 
 app.use(async (req, res, next) => {
   try {
