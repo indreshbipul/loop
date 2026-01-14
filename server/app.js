@@ -67,12 +67,21 @@ const connectDB = require('./utils/mongoDb');
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 app.use(async (req, res, next) => {
+  // If we are ALREADY connected (1), just go to the next thing immediately.
+  if (mongoose.connection.readyState === 1) {
+    return next();
+  }
+
+  // If we are currently "Connecting" (2), wait a tiny bit or let it finish.
+  // Calling connectDB() while it's already connecting can cause "buffering" issues.
   try {
     await connectDB(); 
     next();
   } catch (err) {
+    console.error("DB Middleware Error:", err);
     res.status(500).json({ error: "Database connection failed" });
-}})
+  }
+});
 
 if (process.env.VERCEL !== '1') {
     const port = process.env.PORT || 3000;
