@@ -65,6 +65,7 @@ app.use(productsRoutes);
 //   });
 
 const connectDB = require('./utils/mongoDb');
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 app.use(async (req, res, next) => {
   try {
