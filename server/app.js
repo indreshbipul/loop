@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const productsRoutes = require('./routes/productsRoutes');
 const mongoConnect = require('./utils/mongoDb');
+const mongoose = require('mongoose')
 
 // Initialize express app
 const app = express();
