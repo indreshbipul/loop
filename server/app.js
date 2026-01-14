@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const cookiesParser = require('cookie-parser')
 
+dotenv.config();
 //local imports
 const authRoutes = require('./routes/authRoutes');
 const usersRoutes = require('./routes/usersRoutes');
@@ -12,7 +13,7 @@ const mongoConnect = require('./utils/mongoDb');
 
 // Initialize express app
 const app = express();
-dotenv.config();
+
 const port = process.env.PORT
 const dburi = process.env.MONGODB_URI 
 
@@ -42,14 +43,23 @@ app.use(usersRoutes);
 app.use(productsRoutes);
 
 
-mongoConnect
-  .then(() => {
-    console.log("MongoDB Connected");
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-  });
+// mongoConnect
+//   .then(() => {
+//     console.log("MongoDB Connected");
+//   })
+//   .catch((err) => {
+//     console.error('MongoDB connection error:', err);
+//   });
 
+const connectDB = require('./db');
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB(); 
+    next();
+  } catch (err) {
+    res.status(500).json({ error: "Database connection failed" });
+}})
 
 if (process.env.VERCEL !== '1') {
     const port = process.env.PORT || 3000;
