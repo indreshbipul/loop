@@ -20,7 +20,7 @@ const dburi = process.env.MONGODB_URI
 const allowedOrigins = [
   'http://localhost:5173',
   'https://loop-shopping.netlify.app',
-  /\.vercel\.app$/  // This allows ALL your vercel.app subdomains automatically
+  /\.vercel\.app$/  // This allows ALL your vercel.app subdomains automatically as i know
 ];
 
 app.use(cors({
