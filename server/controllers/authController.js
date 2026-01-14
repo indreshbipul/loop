@@ -1,7 +1,7 @@
 // external imports
 const {validationResult, check} = require('express-validator');
 
-// local imports
+
 const UserModel = require('../models/usersModel');
 const tokenGen = require('../utils/tokenGen');
 const usersModel = require('../models/usersModel');
