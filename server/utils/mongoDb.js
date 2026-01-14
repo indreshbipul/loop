@@ -33,7 +33,6 @@ const url = process.env.MONGODB_URI
 
 // Connect to MongoDB using Mongoose which is more advanced only for Vercel Server less_____________________________
 
-const mongoose = require('mongoose');
 let cached = global.mongoose;
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
