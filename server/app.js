@@ -47,23 +47,7 @@ app.use(express.json());
 app.use(cookiesParser ())
 
 
-// Routes
-app.get('/', (req, res, next) => {
-    res.send('Hello, World!');
-});
-app.use(authRoutes);
-app.use(usersRoutes);
-app.use(productsRoutes);
-
-
-// mongoConnect
-//   .then(() => {
-//     console.log("MongoDB Connected");
-//   })
-//   .catch((err) => {
-//     console.error('MongoDB connection error:', err);
-//   });
-
+// 
 const connectDB = require('./utils/mongoDb');
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
@@ -83,6 +67,26 @@ app.use(async (req, res, next) => {
     res.status(500).json({ error: "Database connection failed" });
   }
 });
+
+
+// Routes
+app.get('/', (req, res, next) => {
+    res.send('Hello, World!');
+});
+app.use(authRoutes);
+app.use(usersRoutes);
+app.use(productsRoutes);
+
+
+// mongoConnect
+//   .then(() => {
+//     console.log("MongoDB Connected");
+//   })
+//   .catch((err) => {
+//     console.error('MongoDB connection error:', err);
+//   });
+
+
 
 if (process.env.VERCEL !== '1') {
     const port = process.env.PORT || 3000;
