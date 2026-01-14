@@ -1,6 +1,6 @@
 # 🛒 Loop — Enterprise‑Grade E‑Commerce Platform
 
-Deployed_link : provided sooon -----
+Deployed_link : https://loop-shopping.netlify.app/
 
 ## 1. Overview
 Loop is a scalable, secure Amazon‑style e‑commerce platform built around SKU‑based inventory, price snapshotting, and race‑safe data handling.
