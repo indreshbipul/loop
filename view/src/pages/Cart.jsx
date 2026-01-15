@@ -4,9 +4,11 @@ import CartCard from "../components/CartCard.jsx";
 import productService from "../services/productServices.jsx";
 import useAuthHook from "../hooks/authHook.jsx";
 import Loader from "../components/Loader";
+import useCart from "../hooks/useCart.jsx";
 
 function Cart() {
-  const { sessionData, setContext_Error } = useAuthHook(); 
+  const { sessionData, setSessionData, setContext_Error } = useAuthHook(); 
+  const {setContextCartItems } = useCart()
   const [items, setItems] = useState(null); 
   const navigate = useNavigate();
 
@@ -14,6 +16,11 @@ function Cart() {
     if (sessionData?.user) {
       productService.getCartitems()
         .then(({res, status}) => {
+          if (status === 401) {
+            authServices.userLogout();
+            setSessionData(null);
+            navigate('/signin');
+          }
           if (status !== 200 ){
             return setContext_Error({req : "Get Cart", message : res.message})
           }
@@ -27,19 +34,30 @@ function Cart() {
   const removeCartItem = (id) => {
     productService.removeCartItem(id)
       .then(({res, status}) => {
+        if (status === 401) {
+          authServices.userLogout();
+          setSessionData(null);
+          navigate('/signin');
+        }
+        if (res?.CartItem) {
+          setItems(res.CartItem);
+          setContextCartItems(res.CartItem);
+        }
+        if(status === 404){
+          return setContext_Error({req : "Remove item from cart", message : res.message})
+        }
         if (status !== 200 ){
           return setContext_Error({req : "Remove item from cart", message : res.message})
         }
-        setItems(prev =>prev.filter(item => item._id !== id));
       })
       .catch((err) => {
-        setContext_Error({req : "Remove item from cart", message : "Please try again after sometime" })
+        return setContext_Error({req : "Remove item from cart", message : "Please try again after sometime" })
       });
   };
 
   const summary = useMemo(() => {
     const subtotal = items?.reduce((acc, item) => 
-      acc + (item.variantId?.price * item.quantity), 0) || 0;
+      acc + (item?.price * item.quantity), 0) || 0;
     return { subtotal, tax: subtotal * 0.05, total: subtotal * 1.05 };
   }, [items]);
 
@@ -65,7 +83,7 @@ function Cart() {
               </div>
             ) : (
               items.map((item) => (
-                <CartCard key={item.variantId?._id} product={item} removeCartItem= {removeCartItem} />
+                <CartCard key={item.cartItemId} product={item} removeCartItem= {removeCartItem} />
               ))
             )}
           </div>

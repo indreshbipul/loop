@@ -4,11 +4,15 @@ import authServices from "../services/authServices.jsx";
 import productService from "../services/productServices.jsx";
 import useAuthHook from "../hooks/authHook.jsx";
 import Loader from "../components/Loader";
+import useCart from "../hooks/useCart.jsx";
+import useWishList from "../hooks/useWishlist.jsx";
 
 function ProductDetail() {
   const { productId, varientId } = useParams();
   const navigate = useNavigate();
-  const { setSessionData, setContext_Error } = useAuthHook();
+  const { setSessionData, setContext_Error } = useAuthHook()
+  const {setContextCartItems, contextCartItems } =  useCart()
+  const {setContextWishlistItems, contextWishlistItems} = useWishList()
   const [product, setProduct] = useState(null);
   const [selectedVariantId, setSelectedVariantId] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -62,11 +66,15 @@ function ProductDetail() {
     productService.addProductToCart({variantId : selectedVariantId, priceAtAdd :selectedVariant?.price })
       .then(({ res, status }) => {
         setLoadingCart(false);
+        if(res?.CartItem){
+          setContextCartItems(res.CartItem)
+        }
         if (status === 401) {
           authServices.userLogout();
           setSessionData(null);
           navigate('/signin');
-        } else if (status !== 200) {
+        } 
+        else if (status !== 200) {
           setContext_Error({ req: "add to cart", message: res.message });
         }
       })
@@ -85,7 +93,11 @@ function ProductDetail() {
           authServices.userLogout();
           setSessionData(null);
           navigate('/signin');
-        } else if (status !== 200) {
+        } 
+        if(res?.items){
+          setContextWishlistItems(res.items)
+        }
+        else if (status !== 200) {
           setContext_Error({ req: "add to Wishlist", message: res.message });
         }
       })

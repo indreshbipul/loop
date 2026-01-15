@@ -20,7 +20,7 @@ export const CartProvider = ({ children }) => {
 
     productService.getCartitems()
       .then(({ res, status }) => {
-        if(status ===400){
+        if(status === 400){
             authService.userLogout()
             useSessionData(null)
             navigate('/signin')   
@@ -29,7 +29,7 @@ export const CartProvider = ({ children }) => {
         if(status !== 200){
             return setContext_Error({req : "Cart Context" , message : res.message})
         }
-        setCartItems(res.CartItem || []);
+        setCartItems(res.CartItem);
         setCartLoaded(true);
       })
       .catch(()=>{
@@ -40,7 +40,7 @@ export const CartProvider = ({ children }) => {
   const cartCount = cartItems.reduce((t, i) => t + i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cartItems, setCartItems, cartCount}}>
+    <CartContext.Provider value={{ contextcartItems : cartItems, setContextCartItems : setCartItems, cartCount}}>
       {children}
     </CartContext.Provider>
   );

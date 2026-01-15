@@ -70,7 +70,6 @@ exports.updateUser = async (req, res) => {
 
   } 
   catch (err) {
-    console.log(err)
     if (err.code === 11000) {
       return res.status(409).json({ message: "Mobile or email already exists" });
     }
@@ -87,6 +86,38 @@ exports.deleteUser = ((req, res, next) => {
 });
 
 exports.addToCart = async (req, res, next) => {
+    async function getCart(cartId){
+        const cartItm = await CartItemModel.find({cartId}).populate({
+            path : "variantId",
+            select : "color size price stock imageUrl productId",
+            populate : {
+                path : "productId",
+                select : "title brand "
+                }
+        })  
+        if(!cartItm){
+            return
+        }
+        const response = cartItm.map(item => ({
+            cartItemId: item._id,
+            quantity: item.quantity,
+            price: item.priceAtAdd,
+            stock: item.variantId.stock,
+            variant: {
+                variantId : item.variantId._id,
+                color: item.variantId.color,
+                size: item.variantId.size,
+                image: item.variantId.imageUrl
+            },
+            product: {
+                id: item.variantId.productId._id,
+                title: item.variantId.productId.title,
+                brand: item.variantId.productId.brand
+        }
+        }));  
+        return response         
+    }
+
     const userId = req.user
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -117,21 +148,21 @@ exports.addToCart = async (req, res, next) => {
                 variantId : variantId,
                 priceAtAdd : priceAtAdd
             })
-            return res.status(200).json({message : "Cart updated Sucessfully"})  
+            return res.status(200).json({message : "Cart updated Sucessfully", CartItem : await getCart(cartId) || []})  
         }
         if(CartItem.quantity > stock){
             CartItem.quantity = stock
             CartItem.priceAtAdd  = priceAtAdd
             await CartItem.save() 
-            return res.status(409).json({message : `Only ${stock} items available in Stock`})
+            return res.status(409).json({message : `Only ${stock} items available in Stock`, CartItem : await getCart(cartId) || []})
         }
         if(CartItem.quantity +1 > stock){
-            return res.status(409).json({message : `Only ${stock} items available in Stock`})
+            return res.status(409).json({message : `Only ${stock} items available in Stock`, CartItem : await getCart(cartId) || []})
         }
         CartItem.quantity += 1
         CartItem.priceAtAdd  = priceAtAdd
         await CartItem.save()  
-        return res.status(200).json({message : "Cart updated Sucessfully"})                 
+        return res.status(200).json({message : "Cart updated Sucessfully", CartItem : await getCart(cartId) || []})                 
   } 
   catch (err) {
     return res.status(500).json({ message: 'Please try again later' });
@@ -139,22 +170,55 @@ exports.addToCart = async (req, res, next) => {
 };
 
 exports.removeFromCart = async (req, res) => {
+    async function getCart(cartId){
+        const cartItm = await CartItemModel.find({cartId}).populate({
+            path : "variantId",
+            select : "color size price stock imageUrl productId",
+            populate : {
+                path : "productId",
+                select : "title brand "
+                }
+        })  
+        if(!cartItm){
+            return
+        }
+        const response = cartItm.map(item => ({
+            cartItemId: item._id,
+            quantity: item.quantity,
+            price: item.priceAtAdd,
+            stock: item.variantId.stock,
+            variant: {
+                variantId : item.variantId._id,
+                color: item.variantId.color,
+                size: item.variantId.size,
+                image: item.variantId.imageUrl
+            },
+            product: {
+                id: item.variantId.productId._id,
+                title: item.variantId.productId.title,
+                brand: item.variantId.productId.brand
+        }
+        }));  
+        return response         
+    }
+
     const userId = req.user;
     const { cartItemId } = req.body;
     if (!cartItemId){
-        return res.status(400).json({ message: "Invalid request" });
+        return res.status(404).json({ message: "Invalid request", CartItem : await getCart(cart._id) });
     }
     try {
         const cart = await CartModel.findOne({ userId, status: "active" });
-        if (!cart) return res.status(200).json({ items: [] });
+        if (!cart) return res.status(200).json({ CartItem: [] });
 
         const result = await CartItemModel.deleteOne({_id: cartItemId, cartId: cart._id });
         if (result.deletedCount === 0) {
-            return res.status(404).json({ message: "Item not found in your cart" });
+            return res.status(404).json({ message: "Item not found in your cart", CartItem : await getCart(cart._id) });
         }
-        return res.status(200).json({ message: "Item removed" });
+        return res.status(200).json({ message: "Item removed", CartItem : await getCart(cart._id) });
 
     } catch (err) {
+        console.log(err)
         return res.status(500).json({ message: 'Please try again later' });
     }
 };
@@ -202,6 +266,7 @@ exports.getCartItems = async (req, res, next) => {
             price: item.priceAtAdd,
             stock: item.variantId.stock,
             variant: {
+                variantId : item.variantId._id,
                 color: item.variantId.color,
                 size: item.variantId.size,
                 image: item.variantId.imageUrl
@@ -210,16 +275,15 @@ exports.getCartItems = async (req, res, next) => {
                 id: item.variantId.productId._id,
                 title: item.variantId.productId.title,
                 brand: item.variantId.productId.brand
-        }
-    }));
+            }
+        }));
         if (stockModified.length > 0 || priceModified.length > 0) {
             return res.status(200).json({CartItem : response, stockModified, priceModified})
         }
-        return res.status(200).json({CartItem : items })
+        return res.status(200).json({CartItem : response })
 
     }
     catch(err){
-        console.log(err)
         return res.status(500).json({ message: 'Please try again later' });
     }
 }
@@ -248,6 +312,31 @@ exports.handelCartQuantity = async (req, res, next) => {
 }
 
 exports.addToWishlist = async (req, res, next) => { 
+    async function getWishlist(userId) {
+        const wishlist = await WishlistModel.find({ userId }).populate({
+            path: "variantId",
+            select: "productId color size price imageUrl stock",
+            populate: { path: "productId", select: "title brand" }
+            });
+
+        const response = wishlist.map(item => ({
+            price: item.variantId.price,
+            stock: item.variantId.stock,
+            variant: {
+                variantId : item.variantId._id,
+                color: item.variantId.color,
+                size: item.variantId.size,
+                image: item.variantId.imageUrl
+            },
+            product: {
+                id: item.variantId.productId._id,
+                title: item.variantId.productId.title,
+                brand: item.variantId.productId.brand
+            }
+        }))
+        return response || [];
+    }
+
     const userId = req.user
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -259,12 +348,12 @@ exports.addToWishlist = async (req, res, next) => {
     try {
         const adding = await WishlistModel.create({userId,variantId})
         if(adding){
-            return res.status(200).json({message : "added sucessfully"})
+            return res.status(200).json({message : "added sucessfully", items : await getWishlist(userId)})
         }
     } 
     catch (err) {
         if(err.code === 11000){
-            return res.status(200).json({message : "wishlist already have this item"})
+            return res.status(200).json({message : "wishlist already have this item", items : await getWishlist(userId)})
         }
         return res.status(500).json({ message: 'please try again after Sometime' });
     }
@@ -278,36 +367,74 @@ exports.getWishlistItems = async (req, res, next) => {
     try{
         const Wishlist = await WishlistModel.find({userId}).populate({
             path : "variantId",
-            select : "productId color size price imageUrl",
+            select : "productId color size price imageUrl stock",
             populate :{path : "productId", select : "title brand"}
         }).select("-__v -createdAt -updatedAt -userId")
         if (Wishlist.length === 0){
             return res.status(200).json({ items: [] });
         }
-        return res.status(200).json({ items : Wishlist});
+        const response = Wishlist.map(item => ({
+            price: item.variantId.price,
+            stock: item.variantId.stock,
+            variant: {
+                variantId : item.variantId._id,
+                color: item.variantId.color,
+                size: item.variantId.size,
+                image: item.variantId.imageUrl
+            },
+            product: {
+                id: item.variantId.productId._id,
+                title: item.variantId.productId.title,
+                brand: item.variantId.productId.brand
+            }
+        }))
+        return res.status(200).json({ items : response});
     }
     catch(err){
-        console.log(err)
         return res.status(500).json({ message: 'please try again after Sometime' });
     }
 }
 
 exports.removeFromWishlist = async(req,res,next) =>{
+    async function getWishlist(userId) {
+        const wishlist = await WishlistModel.find({ userId }).select("-userId ").populate({
+            path: "variantId",
+            select: "productId color size price imageUrl stock",
+            populate: { path: "productId", select: "title brand" }
+            });
+        
+        const response = wishlist.map(item => ({
+            price: item.variantId.price,
+            stock: item.variantId.stock,
+            variant: {
+                variantId : item.variantId._id,
+                color: item.variantId.color,
+                size: item.variantId.size,
+                image: item.variantId.imageUrl
+            },
+            product: {
+                id: item.variantId.productId._id,
+                title: item.variantId.productId.title,
+                brand: item.variantId.productId.brand
+            }
+        }))
+        return response || [];
+    }
+
     const userId = req.user
     if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const {variantId } = req.body
     if (!variantId) {
-      return res.status(400).json({ message: "Invailid request" });
+      return res.status(404).json({ message: "Invailid request", items : await getWishlist(userId) });
     }
     try {
         const removed = await WishlistModel.findOneAndDelete({userId,variantId})
-        console.log(removed)
         if(removed){
-            return res.status(200).json({message : "removed sucessfully"})
+            return res.status(200).json({message : "removed sucessfully", items : await getWishlist(userId)})
         }
-        return res.status(200).json({ message: "item was not in wishlist" })
+        return res.status(200).json({ message: "item was not in wishlist", items : await getWishlist(userId) })
     } 
     catch (err) {
         return res.status(500).json({ message: 'please try again after Sometime' });

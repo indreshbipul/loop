@@ -63,7 +63,7 @@ function Nav() {
               </div>
               {/* Teal Wishlist Count Badge */}
               <span className="absolute bg-teal-600 text-white rounded-full top-[-5px] left-[7px] px-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold group-hover:top-[-15px] transition-all duration-200">
-                {wishlistCount}
+                {wishlistCount || 0}
               </span>
             </NavLink>
 
@@ -76,7 +76,7 @@ function Nav() {
               </div>
               {/* Red Cart Count Badge */}
               <span className="absolute bg-red-600 text-white rounded-full top-[-10px] left-[7px] px-1.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold group-hover:top-[-15px] transition-all duration-200">
-                {cartCount}
+                {cartCount || 0}
               </span>
             </NavLink>
           </>

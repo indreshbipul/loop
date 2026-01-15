@@ -11,7 +11,7 @@ import useWishList from "../hooks/useWishlist.jsx";
 function Wishlist() {
   const { sessionData, useSessionData, setContext_Error, setSessionData } = useAuthHook();
   const [wishlistItems, setWishlistItems] = useState([]);
-  const {wishlistCount} = useWishList()
+  const {setContextWishlistItems} = useWishList()
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -51,6 +51,10 @@ function Wishlist() {
           navigate('/');
           return;
         }
+        if(res.items){
+          setWishlistItems(res.items)
+          setContextWishlistItems(res.items)
+        }
         if (status !== 200){
           setContext_Error({ req: "wishlist", message: err.message})
         }
@@ -86,7 +90,7 @@ function Wishlist() {
               <WishlistCard 
                 key={item._id} 
                 item={item} 
-                handelRemoveWishlist={() => handelRemoveWishlist(item._id)} 
+                handelRemoveWishlist={(id) => handelRemoveWishlist(id)} 
               />
             ))}
           </section>

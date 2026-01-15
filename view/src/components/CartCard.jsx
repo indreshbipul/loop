@@ -5,19 +5,19 @@ import productService from "../services/productServices";
 function CartCard({ product: item, removeCartItem }) {
   const {sessionData, setContext_Error } = useAuthHook();
   const [loading, setLoading] = useState(false);
-  const variant = item?.variantId || {};
-  const productInfo = variant?.productId || {};
+  const variant = item?.variant || {};
+  const productInfo = item?.product || {};
 
-  if (!item || !variant._id) return null;
+  if (!item || !variant) return null;
 
   const handleRemove = () => {
     setLoading(true);
-    removeCartItem(item?._id)
+    removeCartItem(item?.cartItemId)
   };
 
   const handleQty = (e) => {
     const inputVal = parseInt(e.target.value) || 1;
-    const validatedQty = Math.max(1, Math.min(variant.stock, inputVal));
+    const validatedQty = Math.max(1, Math.min(item.stock, inputVal));
     
     productService.cartQuantityChange(userData?.user?._id, item._id, validatedQty)
       .then(() => refresh([]));
@@ -29,7 +29,7 @@ function CartCard({ product: item, removeCartItem }) {
       {/* Image Container */}
       <div className="w-28 h-28 flex-shrink-0 overflow-hidden rounded-[1.5rem] bg-slate-50">
         <img
-          src={variant.imageUrl}
+          src={variant.image}
           alt={productInfo.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
@@ -52,7 +52,7 @@ function CartCard({ product: item, removeCartItem }) {
         </div>
 
         <div className="flex items-center justify-center sm:justify-start gap-6">
-          <p className="font-black text-slate-900 text-sm">₹{variant.price.toLocaleString()}</p>
+          <p className="font-black text-slate-900 text-sm">₹{item.price?.toLocaleString()}</p>
           
           <div className="flex flex-col items-start gap-1">
             <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
@@ -66,7 +66,7 @@ function CartCard({ product: item, removeCartItem }) {
                 className="w-8 bg-transparent text-xs font-bold text-slate-900 outline-none text-center"
               />
             </div>
-            {item.quantity >= variant.stock && (
+            {item.quantity >= item.stock && (
                <p className="text-[7px] text-orange-500 font-bold uppercase pl-2">Max Limit Reached</p>
             )}
           </div>

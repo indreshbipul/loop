@@ -32,7 +32,7 @@ export function WishlistProvider({children}){
     const wishlistCount = wishlistItems?.length || 0;
 
     return (
-        <WishlistContext.Provider value={{ wishlistItems, setWishlistItems, wishlistCount}}>
+        <WishlistContext.Provider value={{ contextWishlistItems : wishlistItems, setContextWishlistItems : setWishlistItems, wishlistCount}}>
             {children}
         </WishlistContext.Provider>
     )

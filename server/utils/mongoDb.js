@@ -44,6 +44,7 @@ if (!cached) {
 
 async function connectDB() {
   if (cached.conn) {
+    console.log("MongoDB connection promise...")
     return cached.conn;
   }
 
@@ -56,10 +57,14 @@ async function connectDB() {
     };
 
     console.log("Creating new MongoDB connection promise...");
-    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts).then((m) => {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, opts)
+    .then((m) => {
       console.log("MongoDB Connected Successfully");
       return m;
-    });
+    })
+    .catch(()=>{
+      console.log("Db connect function not working")
+    })
   }
 
   try {
